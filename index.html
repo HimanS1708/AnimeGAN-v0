@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AnimeGAN</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- <script type="module" src="main.js"></script> -->
+</head>
+<body>
+    <div class="input_body">
+        <h2>Please upload your image and select a version.</h2>
+        <div class="inputs">
+            <input type="file" id="image" accept="image/jpeg, image/png, image/jpg">
+            <select id="options">
+                <option value="version_1">Version 1 (🔺 stylization, 🔻 robustness)</option>
+                <option value="version_2" selected>Version 2 (🔺 robustness,🔻 stylization)</option>
+            </select>
+        </div>
+        <div class="btn_container">
+            <button id="submit_btn">
+                Submit
+            </button>
+        </div>
+    </div>
+    <div class="output_body">
+        <img id="output_img">
+    </div>
+</body>
+
+<script type="module" src="https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js"></script>
+<script type="module">
+    import { Client } from "https://cdn.jsdelivr.net/npm/@gradio/client/dist/index.min.js";
+
+    var btn = document.getElementById("submit_btn")
+    btn.addEventListener("click", async () => {
+        try{
+            var image = document.getElementById("image")
+            var option = document.getElementById("options").value
+            var output = document.getElementById("output_img")
+
+            if(!image || !options){
+                alert("Please provide all inputs!")
+                return;
+            }
+
+            // console.log(image.files[0])
+                                    
+            const client = await Client.connect("HimanS1708/AnimeGAN");
+            const result = await client.predict("/predict", { 
+                img: image.files[0], 		
+                ver: option, 
+            });
+
+            output.src = result.data[0].url
+        }
+        catch (err){
+            console.log("Error: ",err)
+        }
+    })
+</script>
+</html>
